@@ -35,7 +35,7 @@ export default async function AnnouncementsPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {announcements.map((item) => (
+                        {announcements.map((item: any) => (
                             <tr key={item.id} className="border-b hover:bg-gray-50">
                                 <td className="p-4 font-medium">{item.title}</td>
                                 <td className="p-4">
