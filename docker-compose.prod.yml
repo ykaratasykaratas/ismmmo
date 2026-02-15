@@ -16,7 +16,7 @@ services:
     volumes:
       # Veritabanının kalıcı olması için volume mount (PROD DB)
       # /app/db klasörünü mount ederek SQLite'ın journal dosyasını yazabilmesini sağlıyoruz
-      - ./web/prod.db:/app/db/prod.db
+      - ./web/db:/app/db
       # Upload edilen resimlerin kalıcı olması için volume mount
       - ./web/public/uploads:/app/public/uploads
 

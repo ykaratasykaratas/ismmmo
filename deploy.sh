@@ -10,14 +10,26 @@ echo -e "${GREEN}Deploy işlemi başlatılıyor...${NC}"
 echo -e "${GREEN}Git pull yapılıyor...${NC}"
 git pull
 
-# 2. Prod.db dosyası yoksa oluştur (Docker klasör olarak açmasın diye)
-if [ ! -f "web/prod.db" ]; then
-    echo -e "${GREEN}prod.db oluşturuluyor...${NC}"
-    touch web/prod.db
+# 2. Database klasörünü hazırla
+if [ ! -d "web/db" ]; then
+    echo -e "${GREEN}Database klasörü oluşturuluyor...${NC}"
+    mkdir -p web/db
 fi
 
-# Prod.db yazma izinlerini ayarla (Host üzerinde)
-chmod 666 web/prod.db
+# Eğer kök dizinde eski prod.db varsa onu içeri taşı
+if [ -f "web/prod.db" ]; then
+    echo -e "${GREEN}Eski veritabanı taşınıyor...${NC}"
+    mv web/prod.db web/db/prod.db
+fi
+
+# DB yoksa oluştur
+if [ ! -f "web/db/prod.db" ]; then
+    echo -e "${GREEN}Yeni prod.db oluşturuluyor...${NC}"
+    touch web/db/prod.db
+fi
+
+# İzinleri ayarla (Klasör ve dosya için)
+chmod -R 777 web/db
 
 # 3. Veritabanı şemasını güncelle (Migrate)
 echo -e "${GREEN}Veritabanı güncelleniyor...${NC}"

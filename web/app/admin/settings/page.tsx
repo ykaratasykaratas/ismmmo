@@ -37,8 +37,8 @@ export default function SettingsPage() {
             } else {
                 setMessage({ type: 'error', text: data.error });
             }
-        } catch (err) {
-            setMessage({ type: 'error', text: 'Bir hata oluştu.' });
+        } catch (err: any) {
+            setMessage({ type: 'error', text: `Bir hata oluştu: ${err.message || err}` });
         } finally {
             setLoading(false);
         }
