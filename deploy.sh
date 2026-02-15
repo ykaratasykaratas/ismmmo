@@ -16,8 +16,12 @@ if [ ! -f "web/prod.db" ]; then
     touch web/prod.db
 fi
 
+# Prod.db yazma izinlerini ayarla (Host üzerinde)
+chmod 666 web/prod.db
+
 # 3. Veritabanı şemasını güncelle (Migrate)
 echo -e "${GREEN}Veritabanı güncelleniyor...${NC}"
+# Migrator servisi de güncellenen docker-compose.prod.yml'yi kullanacak
 docker compose -f docker-compose.prod.yml run --rm --build migrator
 
 # 4. Web uygulamasını başlat

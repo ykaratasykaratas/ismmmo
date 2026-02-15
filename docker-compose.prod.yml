@@ -11,11 +11,12 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=file:/app/prod.db
+      - DATABASE_URL=file:/app/db/prod.db
       # Add other env vars here or use .env file
     volumes:
       # Veritabanının kalıcı olması için volume mount (PROD DB)
-      - ./web/prod.db:/app/prod.db
+      # /app/db klasörünü mount ederek SQLite'ın journal dosyasını yazabilmesini sağlıyoruz
+      - ./web/prod.db:/app/db/prod.db
       # Upload edilen resimlerin kalıcı olması için volume mount
       - ./web/public/uploads:/app/public/uploads
 
