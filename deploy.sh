@@ -22,7 +22,7 @@ docker compose -f docker-compose.prod.yml run --rm migrator
 
 # 4. Web uygulamasını başlat
 echo -e "${GREEN}Uygulama başlatılıyor...${NC}"
-docker compose -f docker-compose.prod.yml up -d web
+docker compose -f docker-compose.prod.yml up -d --build web
 
 # 5. Gereksiz image'ları temizle (Pi'de yer kazanmak için)
 echo -e "${GREEN}Temizlik yapılıyor...${NC}"
