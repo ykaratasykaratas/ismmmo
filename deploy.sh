@@ -31,6 +31,13 @@ fi
 # İzinleri ayarla (Klasör ve dosya için)
 chmod -R 777 web/db
 
+# 2.5 Upload klasörünü hazırla
+if [ ! -d "web/public/uploads" ]; then
+    echo -e "${GREEN}Upload klasörü oluşturuluyor...${NC}"
+    mkdir -p web/public/uploads
+fi
+chmod -R 777 web/public/uploads
+
 # 3. Veritabanı şemasını güncelle (Migrate)
 echo -e "${GREEN}Veritabanı güncelleniyor...${NC}"
 # Migrator servisi de güncellenen docker-compose.prod.yml'yi kullanacak
