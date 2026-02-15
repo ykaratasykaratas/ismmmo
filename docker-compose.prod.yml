@@ -28,6 +28,6 @@ services:
       target: builder
     command: npx prisma db push --accept-data-loss
     environment:
-      - DATABASE_URL=file:/app/prod.db
+      - DATABASE_URL=file:/app/db/prod.db
     volumes:
-      - ./web/prod.db:/app/prod.db
+      - ./web/db:/app/db
