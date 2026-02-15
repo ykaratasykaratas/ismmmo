@@ -42,6 +42,8 @@ export async function POST(request: Request) {
 
         const isPublished = action === 'publish';
 
+        console.log(`Creating announcement: ${title}, type: ${type}, isPublished: ${isPublished}`);
+
         const announcement = await prisma.announcement.create({
             data: {
                 title,
@@ -58,6 +60,8 @@ export async function POST(request: Request) {
                 isPublished,
             }
         });
+
+        console.log(`Announcement created successfully with ID: ${announcement.id}`);
 
         // Send Notification ONLY if published
         if (isPublished) {
