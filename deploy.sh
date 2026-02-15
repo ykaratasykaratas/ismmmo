@@ -18,13 +18,13 @@ fi
 
 # 3. Veritabanı şemasını güncelle (Migrate)
 echo -e "${GREEN}Veritabanı güncelleniyor...${NC}"
-docker-compose -f docker-compose.prod.yml run --rm migrator
+docker compose -f docker-compose.prod.yml run --rm migrator
 
 # 4. Web uygulamasını başlat
 echo -e "${GREEN}Uygulama başlatılıyor...${NC}"
-docker-compose -f docker-compose.prod.yml up -d web
+docker compose -f docker-compose.prod.yml up -d web
 
-# 4. Gereksiz image'ları temizle (Pi'de yer kazanmak için)
+# 5. Gereksiz image'ları temizle (Pi'de yer kazanmak için)
 echo -e "${GREEN}Temizlik yapılıyor...${NC}"
 docker image prune -f
 
