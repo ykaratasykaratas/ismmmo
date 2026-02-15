@@ -9,8 +9,12 @@ export async function GET(
     // Await params if using Next.js 15+ convention, although in many versions it's direct.
     // Let's use it safely.
     const { filename } = await (params as any);
-
     const filePath = path.join(process.cwd(), 'public/uploads', filename);
+
+    console.log(`Serving image: ${filename}`);
+    console.log(`CWD: ${process.cwd()}`);
+    console.log(`Attempting to read path: ${filePath}`);
+    console.log(`File exists: ${fs.existsSync(filePath)}`);
 
     if (!fs.existsSync(filePath)) {
         return new NextResponse('Resim bulunamadı.', { status: 404 });
