@@ -18,7 +18,7 @@ fi
 
 # 3. Veritabanı şemasını güncelle (Migrate)
 echo -e "${GREEN}Veritabanı güncelleniyor...${NC}"
-docker compose -f docker-compose.prod.yml run --rm migrator
+docker compose -f docker-compose.prod.yml run --rm --build migrator
 
 # 4. Web uygulamasını başlat
 echo -e "${GREEN}Uygulama başlatılıyor...${NC}"
