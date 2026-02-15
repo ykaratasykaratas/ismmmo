@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import AnnouncementActions from '@/components/admin/AnnouncementActions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AnnouncementsPage() {
     const announcements = await prisma.announcement.findMany({
         orderBy: { createdAt: 'desc' },

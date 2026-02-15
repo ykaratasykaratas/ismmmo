@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
 
 export async function GET(request: Request) {
     try {
@@ -64,6 +65,11 @@ export async function POST(request: Request) {
         });
 
         console.log(`Successfully saved to DB! ID: ${announcement.id}`);
+
+        // Revalidate paths to clear cache
+        revalidatePath('/admin/announcements');
+        revalidatePath('/');
+        revalidatePath('/announcements');
 
         // Send Notification ONLY if published
         if (isPublished) {
