@@ -5,6 +5,7 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const categoryId = searchParams.get('categoryId');
+        console.log(`GET /api/announcements reached. CategoryId: ${categoryId}`);
 
         let whereClause: any = { isPublished: true };
 
@@ -28,21 +29,22 @@ export async function GET(request: Request) {
             }
         });
 
+        console.log(`Fetched ${announcements.length} published announcements`);
         return NextResponse.json(announcements);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching announcements:', error);
-        return NextResponse.json({ error: 'Duyurular getirilemedi.' }, { status: 500 });
+        return NextResponse.json({ error: `Duyurular getirilemedi: ${error.message}` }, { status: 500 });
     }
 }
 
 export async function POST(request: Request) {
+    console.log('POST /api/announcements reached');
     try {
         const body = await request.json();
         const { title, description, imageUrl, type, targetCategoryId, eventDate, locationName, latitude, longitude, action, maxParticipants, participationDeadline } = body;
 
         const isPublished = action === 'publish';
-
-        console.log(`Creating announcement: ${title}, type: ${type}, isPublished: ${isPublished}`);
+        console.log(`Payload: title=${title}, type=${type}, isPublished=${isPublished}`);
 
         const announcement = await prisma.announcement.create({
             data: {
@@ -53,24 +55,26 @@ export async function POST(request: Request) {
                 targetCategoryId: targetCategoryId === 'All' ? null : targetCategoryId,
                 eventDate: eventDate ? new Date(eventDate) : null,
                 locationName,
-                latitude,
-                longitude,
+                latitude: latitude ? parseFloat(latitude) : null,
+                longitude: longitude ? parseFloat(longitude) : null,
                 maxParticipants: maxParticipants ? parseInt(maxParticipants) : null,
                 participationDeadline: participationDeadline ? new Date(participationDeadline) : null,
                 isPublished,
             }
         });
 
-        console.log(`Announcement created successfully with ID: ${announcement.id}`);
+        console.log(`Successfully saved to DB! ID: ${announcement.id}`);
 
         // Send Notification ONLY if published
         if (isPublished) {
+            console.log('Attempting to send notifications...');
             try {
                 const { getFirebaseMessaging } = await import('@/lib/firebase-admin');
                 const messaging = getFirebaseMessaging();
 
                 const devices = await prisma.deviceToken.findMany({ select: { token: true } });
                 const tokens = devices.map(d => d.token).filter(t => t);
+                console.log(`Found ${tokens.length} device tokens`);
 
                 if (tokens.length > 0) {
                     const message = {
@@ -87,16 +91,21 @@ export async function POST(request: Request) {
                     };
 
                     const response = await messaging.sendEachForMulticast(message);
-                    console.log(`Notification sent: ${response.successCount} success, ${response.failureCount} failure`);
+                    console.log(`Firebase response: ${response.successCount} success, ${response.failureCount} failure`);
+                } else {
+                    console.log('No tokens found to send.');
                 }
-            } catch (pushError) {
-                console.error('Error sending push notification:', pushError);
+            } catch (pushError: any) {
+                console.error('Push notification error:', pushError.message || pushError);
             }
         }
 
         return NextResponse.json(announcement, { status: 201 });
-    } catch (error) {
-        console.error('Error creating announcement:', error);
-        return NextResponse.json({ error: 'Duyuru oluşturulamadı.' }, { status: 500 });
+    } catch (error: any) {
+        console.error('Announcement creation error:', error);
+        return NextResponse.json({
+            error: `Duyuru oluşturulamadı: ${error.message || 'Bilinmeyen hata'}`,
+            details: error
+        }, { status: 500 });
     }
 }
