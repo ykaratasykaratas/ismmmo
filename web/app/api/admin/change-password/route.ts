@@ -47,8 +47,8 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, message: 'Şifreniz başarıyla güncellendi.' });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Password change error:', error);
-        return NextResponse.json({ error: 'Bir hata oluştu.' }, { status: 500 });
+        return NextResponse.json({ error: `Hata detayı: ${error.message || error}` }, { status: 500 });
     }
 }
