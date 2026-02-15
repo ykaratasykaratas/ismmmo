@@ -24,8 +24,10 @@ export async function POST(request: Request) {
         const fileUrl = `/uploads/${filename}`;
 
         return NextResponse.json({ success: true, url: fileUrl });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Upload error:', error);
-        return NextResponse.json({ error: 'Dosya yüklenirken hata oluştu.' }, { status: 500 });
+        return NextResponse.json({
+            error: `Dosya yüklenirken hata oluştu: ${error.message || error}`
+        }, { status: 500 });
     }
 }
