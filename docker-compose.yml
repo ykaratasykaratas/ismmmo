@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  web:
+    container_name: ismmmo-web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=file:/app/dev.db
+    volumes:
+      # Veritabanının kalıcı olması için volume mount
+      - ./web/dev.db:/app/dev.db
+      # Geliştirme sırasında (remote) dosya değişikliklerini yansıtmak isterseniz
+      # production build'de bu genellikle önerilmez ama "hot reload" değil,
+      # "restart" gerektirecek şekilde mount edilebilir.
+      # Ancak standalone build (server.js) kullandığımız için kod mount etmek
+      # Next.js'in production modunda anlık güncellemeyi sağlamaz.
+      # Tekrardan build gerektirir.

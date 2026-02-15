@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "779671431493",
+    "project_id": "ismmmo-67b19",
+    "storage_bucket": "ismmmo-67b19.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779671431493:android:252c0d48d7dfa5baa6f62c",
+        "android_client_info": {
+          "package_name": "tr.org.ismmmo.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFjI1wi6qO7J3YQXzBTmTnJcVS1bb98fs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

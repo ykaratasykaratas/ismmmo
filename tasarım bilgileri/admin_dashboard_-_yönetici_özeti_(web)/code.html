@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html class="dark" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>İSMMMO Yönetim Paneli</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2e3b85","primary-dark": "#1a2356",
+                        "secondary": "#e68434","secondary-dark": "#c56d25",
+                        "background-light": "#f3f5f9",
+                        "background-dark": "#0f172a",
+                        "surface-dark": "#1e293b",
+                        "surface-lighter": "#334155"
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }.donut-chart {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #2e3b85 0% 45%, 
+                #334155 45% 100%
+            );
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .donut-inner {
+            width: 90px;
+            height: 90px;
+            background-color: #1e293b;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-gray-200 font-display min-h-screen flex flex-col pb-20">
+<header class="sticky top-0 z-50 bg-white/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3">
+<button class="p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-surface-lighter text-gray-600 dark:text-gray-300">
+<span class="material-icons-round text-2xl">menu</span>
+</button>
+<div class="flex items-center gap-2">
+<img alt="İSMMMO Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_ijioNsbMFH7GiS2NmqoNLTqfmEQ9v80Msx9GjiKEGsdhx2Gz0vAg25awlkiwrZ5wFV9bSgPV2kLHGFjlSftC1P9e1amVYnKs-M1O6oynk3yqML4yXqB0oxF-FUXFuoFh44mjUjlVmhHK5oNufa7CWwBTum8HL29HBNpZLhNjJZ8GdqHvnaPIF8pEfah6YusdSDljPJ6FhHrqjwjVTuWbfAlwuFHBEWYmrIy6W7vbeVU6FPo99SmNr9wCBOoST28jpTEcMjIF1uMF"/>
+<div class="flex flex-col">
+<h1 class="text-xs font-bold text-primary dark:text-white leading-tight">İSMMMO</h1>
+<span class="text-[10px] font-medium text-gray-500 dark:text-gray-400 leading-tight tracking-tight">KARTAL ODA TEMSİLCİLİĞİ</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-lighter text-gray-600 dark:text-gray-300 transition-colors">
+<span class="material-icons-round text-2xl">notifications</span>
+<span class="absolute top-2 right-2 w-2.5 h-2.5 bg-secondary border-2 border-white dark:border-background-dark rounded-full"></span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 ring-2 ring-transparent hover:ring-primary/20 transition-all">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="User avatar profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGfcjsZ4WgPTFg93QyXkdTaEXol5LnVKUkSHUkggu3CxJb6iYxGvt10BYchJmVz-psP0CDzaHAOIUE9Kl5I21LW2iUHoc4hLsLMdiK_Lsc3NMu7vuGSt4xG1Fz7wIT6DUsxDsMeF9ea0wLPlyk4nm72Ius6R9lGxjo43tU7oZ5U4Qrcb45_0C42mNWJGuQeZQBjByMPe4kRlC-APKPwH1pptr9-mMVrD086vSDXTj0Lz1EGBW06-b7GLuDn0d5bTTa9qP7wyWrIwQr"/>
+</div>
+</div>
+</header>
+<main class="flex-1 px-4 py-6 space-y-6">
+<div class="flex flex-col bg-gradient-to-r from-primary to-primary-dark p-5 rounded-2xl shadow-lg shadow-primary/20">
+<h2 class="text-xl font-bold text-white mb-1">Hoş Geldiniz, Kerem</h2>
+<p class="text-sm text-blue-100/80">İSMMMO Kartal Temsilciliği yönetim özeti.</p>
+</div>
+<section class="grid grid-cols-2 gap-3">
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col gap-3 relative overflow-hidden group">
+<div class="absolute right-0 top-0 w-20 h-20 bg-primary/5 rounded-bl-full -mr-6 -mt-6 transition-transform group-hover:scale-110"></div>
+<div class="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-primary/20 flex items-center justify-center text-primary shadow-sm">
+<span class="material-icons-round">groups</span>
+</div>
+<div>
+<span class="text-2xl font-bold text-slate-800 dark:text-white block">1,240</span>
+<span class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Toplam Üye</span>
+</div>
+<div class="text-xs text-emerald-600 flex items-center font-semibold bg-emerald-50 w-fit px-2 py-0.5 rounded-full">
+<span class="material-icons-round text-sm mr-0.5">trending_up</span>
+<span>+2.5%</span>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl border-l-4 border-l-secondary border-y border-r border-gray-100 dark:border-y-gray-700/50 dark:border-r-gray-700/50 shadow-sm flex flex-col gap-3 relative overflow-hidden">
+<div class="w-10 h-10 rounded-lg bg-orange-50 dark:bg-secondary/20 flex items-center justify-center text-secondary shadow-sm">
+<span class="material-icons-round">hourglass_empty</span>
+</div>
+<div>
+<span class="text-2xl font-bold text-slate-800 dark:text-white block">12</span>
+<span class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Onay Bekleyen</span>
+</div>
+<div class="mt-0">
+<span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary/10 text-secondary border border-secondary/20">İşlem Gerekli</span>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col gap-3 group">
+<div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
+<span class="material-icons-round">campaign</span>
+</div>
+<div>
+<span class="text-2xl font-bold text-slate-800 dark:text-white block">3</span>
+<span class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Aktif Duyuru</span>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark p-4 rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col gap-3">
+<div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm">
+<span class="material-icons-round">event_available</span>
+</div>
+<div>
+<span class="text-2xl font-bold text-slate-800 dark:text-white block">85%</span>
+<span class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Katılım Oranı</span>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-1 gap-6">
+<div class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm overflow-hidden">
+<div class="p-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-surface-dark">
+<h3 class="font-bold text-slate-800 dark:text-white text-sm uppercase tracking-wide">Yaklaşan Etkinlikler</h3>
+<a class="text-xs font-semibold text-primary hover:text-primary-dark transition-colors" href="#">Tümünü Gör</a>
+</div>
+<div class="divide-y divide-gray-100 dark:divide-gray-700">
+<div class="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-surface-lighter/50 transition-colors group">
+<div class="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 group-hover:bg-primary/20 flex flex-col items-center justify-center text-primary font-bold leading-none transition-colors">
+<span class="text-[10px] uppercase opacity-80 mb-0.5">Tem</span>
+<span class="text-lg">15</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-800 dark:text-white truncate">Yaz Pikniği Organizasyonu</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5 flex items-center gap-1">
+<span class="material-icons-round text-[10px]">place</span> Belgrad Ormanı • 10:00
+                        </p>
+</div>
+<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-semibold bg-secondary/10 text-secondary border border-secondary/20">
+                            Hazırlanıyor
+                        </span>
+</div>
+<div class="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-surface-lighter/50 transition-colors group">
+<div class="flex-shrink-0 w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-gray-200 flex flex-col items-center justify-center text-gray-500 dark:text-gray-300 font-bold leading-none transition-colors">
+<span class="text-[10px] uppercase opacity-80 mb-0.5">Ağu</span>
+<span class="text-lg">20</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-800 dark:text-white truncate">Olağan Genel Kurul</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5 flex items-center gap-1">
+<span class="material-icons-round text-[10px]">place</span> Dernek Merkezi • 14:00
+                        </p>
+</div>
+<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800/30">
+                            Planlandı
+                        </span>
+</div>
+<div class="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-surface-lighter/50 transition-colors group">
+<div class="flex-shrink-0 w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-gray-200 flex flex-col items-center justify-center text-gray-500 dark:text-gray-300 font-bold leading-none transition-colors">
+<span class="text-[10px] uppercase opacity-80 mb-0.5">Eyl</span>
+<span class="text-lg">05</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-800 dark:text-white truncate">Eylül Semineri</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5 flex items-center gap-1">
+<span class="material-icons-round text-[10px]">videocam</span> Online • 20:00
+                        </p>
+</div>
+<span class="inline-flex items-center px-2 py-1 rounded text-[10px] font-semibold bg-gray-100 text-gray-600 border border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+                            Taslak
+                        </span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm p-5">
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-bold text-slate-800 dark:text-white text-sm uppercase tracking-wide">Canlı Katılım Durumu</h3>
+<button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+<span class="material-icons-round text-lg">more_horiz</span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col gap-3">
+<div>
+<span class="text-xs font-semibold text-secondary uppercase tracking-wider mb-1 block">Şu anki Etkinlik</span>
+<span class="text-base font-bold text-slate-900 dark:text-white block">Networking Gecesi</span>
+</div>
+<div>
+<div class="flex items-baseline gap-1">
+<span class="text-4xl font-extrabold text-primary dark:text-white">45</span>
+<span class="text-sm text-gray-500 font-medium">/ 100</span>
+</div>
+<span class="text-xs text-gray-400 font-medium">Katılımcı</span>
+</div>
+<div class="flex gap-3 mt-1">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-primary shadow-sm"></span>
+<span class="text-[10px] font-semibold text-gray-500 uppercase">Dolu</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-slate-200 dark:bg-slate-700"></span>
+<span class="text-[10px] font-semibold text-gray-500 uppercase">Boş</span>
+</div>
+</div>
+</div>
+<div class="donut-chart flex-shrink-0 shadow-lg shadow-primary/10 ring-4 ring-gray-50 dark:ring-surface-lighter">
+<div class="donut-inner">
+<span class="text-xl font-extrabold text-white">45%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-white dark:bg-surface-dark rounded-xl border border-gray-100 dark:border-gray-700/50 shadow-sm p-5">
+<h3 class="font-bold text-slate-800 dark:text-white text-sm uppercase tracking-wide mb-5">Son Aktiviteler</h3>
+<div class="relative pl-4 border-l-2 border-dashed border-gray-200 dark:border-gray-700 space-y-8 ml-1">
+<div class="relative">
+<div class="absolute -left-[23px] top-1.5 w-3.5 h-3.5 rounded-full border-[3px] border-white dark:border-surface-dark bg-primary ring-2 ring-primary/20"></div>
+<div class="flex flex-col">
+<p class="text-sm text-slate-700 dark:text-gray-300 leading-snug">
+<span class="font-bold text-slate-900 dark:text-white">Ahmet Yılmaz</span> yeni üye olarak kayıt oldu.
+                        </p>
+<span class="text-xs text-gray-400 mt-1.5 font-medium flex items-center gap-1">
+<span class="material-icons-round text-[10px]">schedule</span> 2 dakika önce
+                        </span>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -left-[23px] top-1.5 w-3.5 h-3.5 rounded-full border-[3px] border-white dark:border-surface-dark bg-secondary ring-2 ring-secondary/20"></div>
+<div class="flex flex-col">
+<p class="text-sm text-slate-700 dark:text-gray-300 leading-snug">
+<span class="font-bold text-slate-900 dark:text-white">Yaz Şenliği</span> duyurusu yayınlandı.
+                        </p>
+<span class="text-xs text-gray-400 mt-1.5 font-medium flex items-center gap-1">
+<span class="material-icons-round text-[10px]">schedule</span> 15 dakika önce
+                        </span>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -left-[23px] top-1.5 w-3.5 h-3.5 rounded-full border-[3px] border-white dark:border-surface-dark bg-emerald-500 ring-2 ring-emerald-500/20"></div>
+<div class="flex flex-col">
+<p class="text-sm text-slate-700 dark:text-gray-300 leading-snug">
+<span class="font-bold text-slate-900 dark:text-white">Mehmet Demir</span> aidat ödemesi.
+                        </p>
+<span class="text-xs text-gray-400 mt-1.5 font-medium flex items-center gap-1">
+<span class="material-icons-round text-[10px]">schedule</span> 1 saat önce
+                        </span>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -left-[23px] top-1.5 w-3.5 h-3.5 rounded-full border-[3px] border-white dark:border-surface-dark bg-slate-400 ring-2 ring-slate-400/20"></div>
+<div class="flex flex-col">
+<p class="text-sm text-slate-700 dark:text-gray-300 leading-snug">
+<span class="font-bold text-slate-900 dark:text-white">Ayşe Kaya</span> üyelik güncellemesi.
+                        </p>
+<span class="text-xs text-gray-400 mt-1.5 font-medium flex items-center gap-1">
+<span class="material-icons-round text-[10px]">schedule</span> 3 saat önce
+                        </span>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-2.5 text-sm text-primary font-semibold bg-primary/5 hover:bg-primary/10 border border-primary/10 rounded-lg transition-all dark:bg-primary/10 dark:hover:bg-primary/20 dark:text-blue-300">
+                Tüm Geçmişi Görüntüle
+            </button>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-gray-700/50 pb-safe pt-2 px-6 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center h-14">
+<a class="flex flex-col items-center gap-1 text-primary dark:text-blue-400" href="#">
+<span class="material-icons-round text-2xl">dashboard</span>
+<span class="text-[10px] font-bold">Özet</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-400 hover:text-slate-600 dark:hover:text-gray-200 transition-colors" href="#">
+<span class="material-icons-round text-2xl">people</span>
+<span class="text-[10px] font-medium">Üyeler</span>
+</a>
+<div class="relative -top-6">
+<button class="w-14 h-14 rounded-full bg-gradient-to-br from-secondary to-secondary-dark text-white shadow-lg shadow-secondary/40 flex items-center justify-center transform active:scale-95 transition-all hover:shadow-secondary/60 border-4 border-white dark:border-surface-dark">
+<span class="material-icons-round text-3xl">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-gray-400 hover:text-slate-600 dark:hover:text-gray-200 transition-colors" href="#">
+<span class="material-icons-round text-2xl">event</span>
+<span class="text-[10px] font-medium">Etkinlik</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-400 hover:text-slate-600 dark:hover:text-gray-200 transition-colors" href="#">
+<span class="material-icons-round text-2xl">settings</span>
+<span class="text-[10px] font-medium">Ayarlar</span>
+</a>
+</div>
+</nav>
+<div class="h-6 w-full bg-white dark:bg-surface-dark fixed bottom-0 z-40"></div>
+
+</body></html>

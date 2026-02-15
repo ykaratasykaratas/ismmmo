@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>İSMMMO Kayıt Ekranı</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e3a8a", // Updated to match logo deep blue
+                        "primary-light": "#2c5282",
+                        "primary-dark": "#101922",
+                        "accent": "#e88d3e", // Orange from logo
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#182430",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }.tab-content {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .hidden-tab {
+            display: none;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .active-tab {
+            display: block;
+            opacity: 1;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }#successModal {
+            backdrop-filter: blur(4px);
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200 antialiased min-h-screen flex items-center justify-center p-4">
+<div class="w-full max-w-md mx-auto relative">
+<div class="flex flex-col items-center justify-center pt-8 pb-6">
+<div class="w-24 h-24 bg-white dark:bg-surface-dark rounded-2xl shadow-lg flex items-center justify-center mb-4 overflow-hidden border border-slate-100 dark:border-slate-700">
+<img alt="İSMMMO Logo" class="w-full h-full object-contain p-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD2n_k2pyotwSyZB2ngIx4eS9oW0xQ0rfNqpMM6ZNYpIH6cJMoVNr09jZeQ1g84fb7Yy-lGjb7IhtV8VyxA6bl2QWhjbMR3n1ltCod8UrDV7t-l3cgkLr6diBcv2c63RYBPLXCZD2jUoVgewRcx1V6xE7kAVqBFQoI280GUMAWB00HEve9xocSWmma_m9OJ6l9kUtXvbvqQ-oBFjsNVxFdl4hGv6ClRz2Pl_QqMQ3dG_Xz7J1M-fau0AkvSiB8XTXb_1x2Ge_wdtgO"/>
+</div>
+<h1 class="text-xl font-bold text-center text-primary dark:text-white tracking-tight uppercase">İSMMMO<br/><span class="text-base font-semibold text-slate-600 dark:text-slate-300">KARTAL ODA TEMSİLCİLİĞİ</span></h1>
+<p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Üye Kayıt Ekranı</p>
+</div>
+<div class="bg-white dark:bg-surface-dark p-1.5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex mb-6 relative z-10">
+<button class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-primary bg-primary/10 shadow-sm ring-1 ring-primary/20" id="tab-login" onclick="switchTab('login')">
+                Giriş Yap
+            </button>
+<button class="flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200" id="tab-register" onclick="switchTab('register')">
+                Kayıt Ol
+            </button>
+</div>
+<div class="bg-white dark:bg-surface-dark rounded-2xl shadow-lg border-t-4 border-accent border-l border-r border-b dark:border-slate-700 p-6 relative overflow-hidden">
+<div class="active-tab" id="content-login">
+<form class="space-y-5" onsubmit="event.preventDefault();">
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 ml-1" for="login-phone">Telefon Numarası</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+<span class="material-icons-round text-lg">phone</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-3 border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-primary focus:border-primary dark:bg-background-dark dark:text-white placeholder-slate-400" id="login-phone" placeholder="5XX XXX XX XX" type="tel"/>
+</div>
+</div>
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 ml-1" for="login-password">Şifre</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+<span class="material-icons-round text-lg">lock</span>
+</span>
+<input class="block w-full pl-10 pr-10 py-3 border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-primary focus:border-primary dark:bg-background-dark dark:text-white placeholder-slate-400" id="login-password" placeholder="••••••••" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-primary transition-colors" type="button">
+<span class="material-icons-round text-lg">visibility</span>
+</button>
+</div>
+<div class="flex justify-end mt-2">
+<a class="text-xs font-medium text-primary hover:text-primary-light transition-colors" href="#">Şifremi Unuttum?</a>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary-light text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2 mt-2">
+<span>Giriş Yap</span>
+<span class="material-icons-round text-sm">arrow_forward</span>
+</button>
+</form>
+</div>
+<div class="hidden-tab" id="content-register">
+<form class="space-y-4" onsubmit="handleRegister(event)">
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 ml-1" for="reg-name">Ad Soyad</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+<span class="material-icons-round text-lg">person</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-3 border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-accent focus:border-accent dark:bg-background-dark dark:text-white placeholder-slate-400" id="reg-name" placeholder="Adınız Soyadınız" required="" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 ml-1" for="reg-phone">Telefon No</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+<span class="material-icons-round text-lg">phone</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-3 border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-accent focus:border-accent dark:bg-background-dark dark:text-white placeholder-slate-400" id="reg-phone" placeholder="5XX..." required="" type="tel"/>
+</div>
+</div>
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 ml-1" for="reg-room">Oda No</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+<span class="material-icons-round text-lg">meeting_room</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-3 border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-accent focus:border-accent dark:bg-background-dark dark:text-white placeholder-slate-400" id="reg-room" placeholder="12345" required="" type="number"/>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 ml-1" for="reg-email">Email Adresi</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+<span class="material-icons-round text-lg">email</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-3 border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-accent focus:border-accent dark:bg-background-dark dark:text-white placeholder-slate-400" id="reg-email" placeholder="ornek@email.com" required="" type="email"/>
+</div>
+</div>
+<div>
+<label class="block text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 ml-1" for="reg-dob">Doğum Tarihi</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+<span class="material-icons-round text-lg">calendar_today</span>
+</span>
+<input class="block w-full pl-10 pr-3 py-3 border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-accent focus:border-accent dark:bg-background-dark dark:text-white placeholder-slate-400 text-slate-500" id="reg-dob" required="" type="date"/>
+</div>
+</div>
+<div class="pt-2">
+<button class="w-full bg-primary hover:bg-primary-light text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2" type="submit">
+<span>Kayıt Ol</span>
+<span class="material-icons-round text-sm">person_add</span>
+</button>
+</div>
+<div class="text-center mt-4">
+<p class="text-sm text-slate-500 dark:text-slate-400">
+                            Zaten hesabınız var mı? 
+                            <button class="text-primary hover:text-primary-light font-medium hover:underline transition-colors focus:outline-none" onclick="switchTab('login')" type="button">
+                                Giriş yapın
+                            </button>
+</p>
+</div>
+</form>
+</div>
+</div>
+<div class="fixed top-0 left-0 w-full h-64 bg-gradient-to-b from-primary/10 to-transparent -z-10 pointer-events-none"></div>
+<div class="fixed bottom-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl -z-10 translate-x-1/2 translate-y-1/2"></div>
+</div>
+<div aria-labelledby="modal-title" aria-modal="true" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/60 transition-opacity opacity-0" id="successModal" role="dialog">
+<div class="relative w-full max-w-sm mx-4 transform transition-all scale-95 opacity-0" id="modalContent">
+<div class="bg-white dark:bg-surface-dark rounded-2xl shadow-2xl overflow-hidden p-6 text-center border-t-4 border-accent">
+<div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-5">
+<span class="material-icons-round text-3xl text-green-600 dark:text-green-400">check_circle</span>
+</div>
+<h3 class="text-lg leading-6 font-bold text-slate-900 dark:text-white mb-2" id="modal-title">Kaydınız Alındı!</h3>
+<div class="mt-2">
+<p class="text-sm text-slate-500 dark:text-slate-300">
+                        Üyelik başvurunuz başarıyla iletildi. Hesabınız <strong>yönetici onayı</strong> sonrasında aktifleşecektir.
+                    </p>
+</div>
+<div class="mt-6">
+<button class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-3 bg-primary text-base font-medium text-white hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:text-sm" onclick="closeModal()" type="button">
+                        Anlaşıldı, Teşekkürler
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+        function switchTab(tab) {
+            const loginBtn = document.getElementById('tab-login');
+            const registerBtn = document.getElementById('tab-register');
+            const loginContent = document.getElementById('content-login');
+            const registerContent = document.getElementById('content-register');
+            if (tab === 'login') {
+                // Style Buttons
+                loginBtn.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-primary bg-primary/10 shadow-sm ring-1 ring-primary/20";
+                registerBtn.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200";
+                // Show Content
+                loginContent.classList.remove('hidden-tab');
+                loginContent.classList.add('active-tab');
+                registerContent.classList.remove('active-tab');
+                registerContent.classList.add('hidden-tab');
+            } else {
+                // Style Buttons
+                registerBtn.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-primary bg-primary/10 shadow-sm ring-1 ring-primary/20";
+                loginBtn.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200";
+                // Show Content
+                registerContent.classList.remove('hidden-tab');
+                registerContent.classList.add('active-tab');
+                loginContent.classList.remove('active-tab');
+                loginContent.classList.add('hidden-tab');
+            }
+        }
+        function handleRegister(e) {
+            e.preventDefault();
+            const modal = document.getElementById('successModal');
+            const modalContent = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            // Small delay to allow display:block to apply before transition
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+        function closeModal() {
+            const modal = document.getElementById('successModal');
+            const modalContent = document.getElementById('modalContent');
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                // Switch back to login after closing modal
+                switchTab('login');
+            }, 300);
+        }
+    </script>
+</body></html>
