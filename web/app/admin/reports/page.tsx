@@ -1,210 +1,40 @@
-'use client';
+import Link from 'next/link';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-
-interface Announcement {
-    id: string;
-    title: string;
-    description: string;
-    eventDate: string | null;
-    type: 'Announcement' | 'Event';
-    _count?: {
-        participations: number;
-    };
-}
-
-interface Participant {
-    id: string;
-    user: {
-        fullName: string;
-        phone: string;
-        roomNumber: string;
-    };
-    plusCount: number;
-    totalComing: number;
-    createdAt: string;
-}
-
-export default function ReportsPage() {
-    const [events, setEvents] = useState<Announcement[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [selectedEvent, setSelectedEvent] = useState<Announcement | null>(null);
-    const [participants, setParticipants] = useState<Participant[]>([]);
-    const [loadingParticipants, setLoadingParticipants] = useState(false);
-
-    useEffect(() => {
-        fetchEvents();
-    }, []);
-
-    const fetchEvents = async () => {
-        try {
-            const res = await fetch('/api/announcements');
-            const data = await res.json();
-            // Filter only events
-            const eventList = data.filter((item: Announcement) => item.type === 'Event');
-            setEvents(eventList);
-        } catch (error) {
-            console.error('Error fetching events:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchParticipants = async (announcementId: string) => {
-        setLoadingParticipants(true);
-        try {
-            const res = await fetch(`/api/participations?announcementId=${announcementId}`);
-            const data = await res.json();
-            setParticipants(data);
-        } catch (error) {
-            console.error('Error fetching participants:', error);
-        } finally {
-            setLoadingParticipants(false);
-        }
-    };
-
-    const handleViewDetails = (event: Announcement) => {
-        setSelectedEvent(event);
-        fetchParticipants(event.id);
-    };
-
-    const closeDetails = () => {
-        setSelectedEvent(null);
-        setParticipants([]);
-    };
-
+export default function ReportsLandingPage() {
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-ismmmo-navy">Etkinlik Raporları</h1>
+            <h1 className="text-3xl font-bold text-ismmmo-navy">Raporlar</h1>
+            <p className="text-gray-500">Görüntülemek istediğiniz rapor türünü seçin.</p>
 
-            {loading ? (
-                <div>Yükleniyor...</div>
-            ) : (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Etkinlik Adı
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Tarih
-                                </th>
-                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Katılım Sayısı
-                                </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    İşlemler
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {events.map((event) => (
-                                <tr key={event.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm font-medium text-gray-900">{event.title}</div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-gray-500">
-                                            {event.eventDate ? new Date(event.eventDate).toLocaleDateString('tr-TR') : '-'}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                                        <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            {event._count?.participations || 0} Kişi
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => handleViewDetails(event)}
-                                            className="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1 rounded"
-                                        >
-                                            Detaylar
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                            {events.length === 0 && (
-                                <tr>
-                                    <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
-                                        Henüz etkinlik bulunmuyor.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {/* Details Modal */}
-            {selectedEvent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
-                        <div className="p-6 border-b flex justify-between items-center bg-gray-50 rounded-t-lg">
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-800">{selectedEvent.title} - Katılımcı Listesi</h2>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    Toplam Başvuru: {participants.length}
-                                </p>
-                            </div>
-                            <button onClick={closeDetails} className="text-gray-500 hover:text-gray-700">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {/* Member List Card */}
+                <Link href="/admin/reports/members" className="block group">
+                    <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition border-l-4 border-blue-500 h-full flex flex-col">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition">Üye Listesi</h2>
+                            <span className="text-3xl bg-blue-100 p-3 rounded-full">👥</span>
                         </div>
-
-                        <div className="p-6 overflow-y-auto flex-1">
-                            {loadingParticipants ? (
-                                <div className="flex justify-center py-8">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                                </div>
-                            ) : participants.length > 0 ? (
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Ad Soyad</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Telefon</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Oda No</th>
-                                            <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Ek Kişi</th>
-                                            <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Toplam</th>
-                                            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Kayıt Tarihi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                        {participants.map((p) => (
-                                            <tr key={p.id} className="hover:bg-gray-50">
-                                                <td className="px-4 py-2 text-sm text-gray-900 font-medium">{p.user.fullName}</td>
-                                                <td className="px-4 py-2 text-sm text-gray-500">{p.user.phone}</td>
-                                                <td className="px-4 py-2 text-sm text-gray-500">{p.user.roomNumber}</td>
-                                                <td className="px-4 py-2 text-sm text-center text-gray-500">+{p.plusCount}</td>
-                                                <td className="px-4 py-2 text-sm text-center font-bold text-gray-900">{p.totalComing}</td>
-                                                <td className="px-4 py-2 text-sm text-gray-500">
-                                                    {new Date(p.createdAt).toLocaleDateString('tr-TR')}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                    Bu etkinlik için henüz katılım kaydı bulunmuyor.
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="p-4 border-t bg-gray-50 rounded-b-lg flex justify-end">
-                            <button
-                                onClick={closeDetails}
-                                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
-                            >
-                                Kapat
-                            </button>
-                        </div>
+                        <p className="text-gray-600 flex-1">
+                            Sisteme kayıtlı tüm üyelerin listesini görüntüleyin, filtreleyin ve Excel formatında indirin.
+                        </p>
+                        <div className="mt-4 text-blue-600 font-semibold group-hover:underline">Listeyi Görüntüle &rarr;</div>
                     </div>
-                </div>
-            )}
+                </Link>
+
+                {/* Event Reports Card */}
+                <Link href="/admin/reports/events" className="block group">
+                    <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition border-l-4 border-green-500 h-full flex flex-col">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-gray-800 group-hover:text-green-600 transition">Etkinlik Raporları</h2>
+                            <span className="text-3xl bg-green-100 p-3 rounded-full">📅</span>
+                        </div>
+                        <p className="text-gray-600 flex-1">
+                            Düzenlenen etkinliklerin katılım durumlarını inceleyin ve katılımcı listelerini Excel olarak alın.
+                        </p>
+                        <div className="mt-4 text-green-600 font-semibold group-hover:underline">Raporları İncele &rarr;</div>
+                    </div>
+                </Link>
+            </div>
         </div>
     );
 }

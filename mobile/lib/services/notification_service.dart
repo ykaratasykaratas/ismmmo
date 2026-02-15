@@ -11,6 +11,14 @@ class NotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> initialize() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool isEnabled = prefs.getBool('notifications_enabled') ?? true;
+
+    if (!isEnabled) {
+      debugPrint('Notifications are disabled by user.');
+      return;
+    }
+
     // Request permission for iOS
     if (Platform.isIOS) {
       await _firebaseMessaging.requestPermission(
@@ -24,14 +32,14 @@ class NotificationService {
     try {
       String? token;
 
-      // Retry up to 3 times
-      for (int i = 0; i < 3; i++) {
+      // Retry up to 5 times
+      for (int i = 0; i < 5; i++) {
         try {
           token = await _firebaseMessaging.getToken();
           if (token != null) break;
         } catch (e) {
           debugPrint('FCM Token Retry ${i + 1}: $e');
-          if (i < 2) await Future.delayed(const Duration(seconds: 2));
+          if (i < 4) await Future.delayed(const Duration(seconds: 5));
         }
       }
 
@@ -65,6 +73,22 @@ class NotificationService {
     }
   }
 
+  Future<void> toggleNotifications(bool enable) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notifications_enabled', enable);
+
+    if (enable) {
+      await initialize();
+    } else {
+      try {
+        await _firebaseMessaging.deleteToken();
+        debugPrint('Notifications disabled: FCM Token deleted.');
+      } catch (e) {
+        debugPrint('Error disabling notifications: $e');
+      }
+    }
+  }
+
   Future<void> _sendTokenToBackend(String token) async {
     try {
       // Create/Get user ID if logged in (optional implementation detail)
@@ -77,9 +101,7 @@ class NotificationService {
         userId = user['id'];
       }
 
-      // Construct URL: ApiConstants.baseUrl is like "http://x.x.x.x:3000/api"
-      // We want: "http://x.x.x.x:3000/api/notifications/register"
-      final url = Uri.parse('${ApiConstants.baseUrl}/notifications/register');
+      final url = Uri.parse(ApiConstants.deviceToken);
 
       debugPrint('NotificationService: Sending token to backend: $url');
       debugPrint(

@@ -6,7 +6,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { announcementId, userId, plusCount } = body;
 
-        // Check if duplicate
+        // 1. Check if user already participating
         const existingParticipation = await prisma.participation.findFirst({
             where: {
                 announcementId,
@@ -19,6 +19,52 @@ export async function POST(request: Request) {
                 { error: 'Zaten katılım bildirdiniz.' },
                 { status: 400 }
             );
+        }
+
+        // 2. Fetch announcement details to check limits
+        const announcement = await prisma.announcement.findUnique({
+            where: { id: announcementId },
+            include: {
+                _count: {
+                    select: { participations: true }
+                }
+            }
+        });
+
+        if (!announcement) {
+            return NextResponse.json({ error: 'Duyuru bulunamadı.' }, { status: 404 });
+        }
+
+        // 3. Check Deadline
+        if (announcement.participationDeadline && new Date() > new Date(announcement.participationDeadline)) {
+            return NextResponse.json(
+                { error: 'Katılım süresi doldu.' },
+                { status: 400 }
+            );
+        }
+
+        // 4. Check Quota (Max Participants)
+        // Note: We count current participants. If limit is 100, and 100 people are there, we block.
+        // Simplified logic: each participation counts as 1 + plusCount. 
+        // For strict quota, we should aggregate the total attendance, but counting rows is a good approximation if plusCount is rarely used or low.
+        // Let's stick to row count for simplicity or aggregate if needed. 
+        // The user requirement says "x kişi ile sınırlı". Assuming total headcount.
+
+        if (announcement.maxParticipants) {
+            const currentTotal = await prisma.participation.aggregate({
+                where: { announcementId },
+                _sum: { totalComing: true }
+            });
+
+            const totalAttendees = (currentTotal._sum.totalComing || 0);
+            const newAttendees = 1 + (plusCount || 0);
+
+            if (totalAttendees + newAttendees > announcement.maxParticipants) {
+                return NextResponse.json(
+                    { error: 'Kontenjan dolu.' },
+                    { status: 400 }
+                );
+            }
         }
 
         const participation = await prisma.participation.create({

@@ -13,11 +13,20 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging ||
+          _tabController.index != _currentIndex) {
+        setState(() {
+          _currentIndex = _tabController.index;
+        });
+      }
+    });
   }
 
   @override
@@ -39,11 +48,11 @@ class _AuthScreenState extends State<AuthScreen>
               children: [
                 // Logo Area
                 Container(
-                  width: 100,
-                  height: 100,
+                  width: 150,
+                  height: 150,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
@@ -54,28 +63,20 @@ class _AuthScreenState extends State<AuthScreen>
                   ),
                   padding: const EdgeInsets.all(16),
                   child: Image.asset(
-                    'assets/images/logo.png', // Fallback to icon if needed
+                    'assets/images/ismmmologo.png',
                     errorBuilder: (context, error, stackTrace) => const Icon(
                       Icons.account_balance,
-                      size: 50,
+                      size: 80,
                       color: AppColors.primary,
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'İSMMMO',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                    letterSpacing: 1.2,
-                  ),
-                ),
+                // Removed duplicate ISMMMO text
                 const Text(
                   'KARTAL İLÇE TEMSİLCİLİĞİ',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textLight,
                     letterSpacing: 1.0,
@@ -116,17 +117,8 @@ class _AuthScreenState extends State<AuthScreen>
 
                 const SizedBox(height: 24),
 
-                // Tab View
-                SizedBox(
-                  height:
-                      500, // Fixed height for forms, or use ExpandablePageView
-                  child: TabBarView(
-                    controller: _tabController,
-                    physics:
-                        const NeverScrollableScrollPhysics(), // Disable swipe
-                    children: const [LoginTab(), RegisterTab()],
-                  ),
-                ),
+                // Content View (Dynamic height, no TabBarView overflow)
+                _currentIndex == 0 ? const LoginTab() : const RegisterTab(),
               ],
             ),
           ),

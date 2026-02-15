@@ -22,11 +22,17 @@ class _SplashScreenState extends State<SplashScreen> {
 
     final authService = Provider.of<AuthService>(context, listen: false);
     final user = await authService.getUser();
+    debugPrint('SplashScreen: User found: ${user?.fullName}');
 
     if (user != null) {
+      debugPrint('SplashScreen: Navigate to /main');
       Navigator.pushReplacementNamed(context, '/main');
     } else {
-      Navigator.pushReplacementNamed(context, '/auth');
+      debugPrint('SplashScreen: Navigate to /auth');
+      Navigator.pushReplacementNamed(
+        context,
+        '/auth',
+      ); // Navigate to AuthScreen (which contains Login)
     }
   }
 

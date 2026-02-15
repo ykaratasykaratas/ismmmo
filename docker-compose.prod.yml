@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  web:
+    container_name: ismmmo-web-prod
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:/app/prod.db
+      # Add other env vars here or use .env file
+    volumes:
+      # Veritabanının kalıcı olması için volume mount (PROD DB)
+      - ./web/prod.db:/app/prod.db
+      # Upload edilen resimlerin kalıcı olması için volume mount
+      - ./web/public/uploads:/app/public/uploads
+
+  migrator:
+    container_name: ismmmo-migrator
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: builder
+    command: npx prisma db push --accept-data-loss
+    environment:
+      - DATABASE_URL=file:/app/prod.db
+    volumes:
+      - ./web/prod.db:/app/prod.db

@@ -6,14 +6,14 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const categoryId = searchParams.get('categoryId');
 
-        let whereClause = {};
+        let whereClause: any = { isPublished: true };
 
         if (categoryId) {
             whereClause = {
+                ...whereClause,
                 OR: [
                     { targetCategoryId: categoryId },
-                    { targetCategoryId: null } // Show 'All' or general announcements too? 
-                    // Requirement: "target_category: Relation (Categories table or 'All')"
+                    { targetCategoryId: null }
                 ]
             }
         }
@@ -38,7 +38,9 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { title, description, imageUrl, type, targetCategoryId, eventDate } = body;
+        const { title, description, imageUrl, type, targetCategoryId, eventDate, locationName, latitude, longitude, action, maxParticipants, participationDeadline } = body;
+
+        const isPublished = action === 'publish';
 
         const announcement = await prisma.announcement.create({
             data: {
@@ -48,39 +50,44 @@ export async function POST(request: Request) {
                 type,
                 targetCategoryId: targetCategoryId === 'All' ? null : targetCategoryId,
                 eventDate: eventDate ? new Date(eventDate) : null,
+                locationName,
+                latitude,
+                longitude,
+                maxParticipants: maxParticipants ? parseInt(maxParticipants) : null,
+                participationDeadline: participationDeadline ? new Date(participationDeadline) : null,
+                isPublished,
             }
         });
 
-        // Send Notification
-        // Ideally this should be in a background job or queue, but for simplicity we do it here inside try/catch block (non-blocking if we don't await, or blocking if we do. Let's make it async but not block response too much, or just await it if crucial).
-        try {
-            const { getFirebaseMessaging } = await import('@/lib/firebase-admin');
-            const messaging = getFirebaseMessaging(); // Get the instance safely
+        // Send Notification ONLY if published
+        if (isPublished) {
+            try {
+                const { getFirebaseMessaging } = await import('@/lib/firebase-admin');
+                const messaging = getFirebaseMessaging();
 
-            const devices = await prisma.deviceToken.findMany({ select: { token: true } });
-            const tokens = devices.map(d => d.token).filter(t => t);
+                const devices = await prisma.deviceToken.findMany({ select: { token: true } });
+                const tokens = devices.map(d => d.token).filter(t => t);
 
-            if (tokens.length > 0) {
-                // Construct message appropriately for sendEachForMulticast
-                const message = {
-                    notification: {
-                        title: 'Yeni Duyuru: ' + title,
-                        body: description.substring(0, 100) + (description.length > 100 ? '...' : ''),
-                    },
-                    data: {
-                        type: 'announcement',
-                        id: announcement.id,
-                        click_action: 'FLUTTER_NOTIFICATION_CLICK',
-                    },
-                    tokens: tokens,
-                };
+                if (tokens.length > 0) {
+                    const message = {
+                        notification: {
+                            title: 'Yeni Duyuru: ' + title,
+                            body: description.substring(0, 100) + (description.length > 100 ? '...' : ''),
+                        },
+                        data: {
+                            type: 'announcement',
+                            id: announcement.id,
+                            click_action: 'FLUTTER_NOTIFICATION_CLICK',
+                        },
+                        tokens: tokens,
+                    };
 
-                const response = await messaging.sendEachForMulticast(message);
-                console.log(`Notification sent: ${response.successCount} success, ${response.failureCount} failure`);
+                    const response = await messaging.sendEachForMulticast(message);
+                    console.log(`Notification sent: ${response.successCount} success, ${response.failureCount} failure`);
+                }
+            } catch (pushError) {
+                console.error('Error sending push notification:', pushError);
             }
-        } catch (pushError) {
-            console.error('Error sending push notification:', pushError);
-            // Don't fail the request if push fails, just log it.
         }
 
         return NextResponse.json(announcement, { status: 201 });

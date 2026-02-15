@@ -14,6 +14,8 @@ services:
     volumes:
       # Veritabanının kalıcı olması için volume mount
       - ./web/dev.db:/app/dev.db
+      # Upload edilen resimlerin kalıcı olması için volume mount
+      - ./web/public/uploads:/app/public/uploads
       # Geliştirme sırasında (remote) dosya değişikliklerini yansıtmak isterseniz
       # production build'de bu genellikle önerilmez ama "hot reload" değil,
       # "restart" gerektirecek şekilde mount edilebilir.

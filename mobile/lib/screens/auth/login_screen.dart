@@ -163,9 +163,20 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.background,
-      body: Center(child: LoginScreenContent()),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/ismmmologo.png', height: 120),
+              const SizedBox(height: 32),
+              const LoginScreenContent(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

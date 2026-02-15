@@ -11,6 +11,8 @@ import 'screens/home/home_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/auth/auth_screen.dart';
 import 'screens/main_scaffold.dart';
+import 'screens/profile/profile_screen.dart';
+import 'screens/profile/change_password_screen.dart';
 import 'core/theme/colors.dart';
 
 void main() async {
@@ -82,8 +84,9 @@ class MyApp extends StatelessWidget {
         '/login': (context) =>
             const LoginScreen(), // Keep for fallback or direct access if needed
         '/register': (context) => const RegisterScreen(),
-        '/home': (context) =>
-            const HomeScreen(), // Usually accessed via MainScaffold now
+        '/home': (context) => const HomeScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/change-password': (context) => const ChangePasswordScreen(),
       },
     );
   }

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import AnnouncementActions from '@/components/admin/AnnouncementActions';
 
 export default async function AnnouncementsPage() {
     const announcements = await prisma.announcement.findMany({
@@ -37,7 +38,12 @@ export default async function AnnouncementsPage() {
                     <tbody>
                         {announcements.map((item: any) => (
                             <tr key={item.id} className="border-b hover:bg-gray-50">
-                                <td className="p-4 font-medium">{item.title}</td>
+                                <td className="p-4 font-medium">
+                                    {item.title}
+                                    {!item.isPublished && (
+                                        <span className="ml-2 px-2 py-0.5 rounded text-[10px] bg-gray-200 text-gray-600 font-bold">TASLAK</span>
+                                    )}
+                                </td>
                                 <td className="p-4">
                                     <span className={`px-2 py-1 rounded text-xs font-bold ${item.type === 'Event' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'}`}>
                                         {item.type === 'Event' ? 'Etkinlik' : 'Duyuru'}
@@ -52,8 +58,7 @@ export default async function AnnouncementsPage() {
                                     ) : '-'}
                                 </td>
                                 <td className="p-4">
-                                    <button className="text-blue-600 hover:underline mr-2">Düzenle</button>
-                                    <button className="text-red-600 hover:underline">Sil</button>
+                                    <AnnouncementActions id={item.id} isPublished={item.isPublished} />
                                 </td>
                             </tr>
                         ))}

@@ -77,6 +77,57 @@ class AuthService {
     return null;
   }
 
+  Future<void> changePassword(
+    String userId,
+    String oldPassword,
+    String newPassword,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConstants.baseUrl}/api/auth/change-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'userId': userId,
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          jsonDecode(response.body)['error'] ?? 'Şifre değiştirilemedi.',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<User> updateProfile(String userId, Map<String, dynamic> data) async {
+    try {
+      final response = await http.patch(
+        Uri.parse(
+          '${ApiConstants.baseUrl}/api/users/$userId',
+        ), // Using the generic user update endpoint
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final updatedUser = User.fromJson(responseData);
+        await _saveUser(updatedUser); // Update local storage
+        return updatedUser;
+      } else {
+        throw Exception(
+          jsonDecode(response.body)['error'] ?? 'Profil güncellenemedi.',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user');

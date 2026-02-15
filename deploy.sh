@@ -1,12 +1,31 @@
 #!/bin/bash
 
-# En son kodları çek
+# Renkler
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}Deploy işlemi başlatılıyor...${NC}"
+
+# 1. En güncel kodu çek
+echo -e "${GREEN}Git pull yapılıyor...${NC}"
 git pull
 
-# Container'ları yeniden oluştur ve başlat (arka planda)
-# --build: Dockerfile'da değişiklik varsa image'ı yeniden oluşturur
-# -d: Detached mode (arka plan)
-docker compose up -d --build
+# 2. Prod.db dosyası yoksa oluştur (Docker klasör olarak açmasın diye)
+if [ ! -f "web/prod.db" ]; then
+    echo -e "${GREEN}prod.db oluşturuluyor...${NC}"
+    touch web/prod.db
+fi
 
-# Kullanılmayan image'ları temizle (isteğe bağlı, yer kazanmak için)
+# 3. Veritabanı şemasını güncelle (Migrate)
+echo -e "${GREEN}Veritabanı güncelleniyor...${NC}"
+docker-compose -f docker-compose.prod.yml run --rm migrator
+
+# 4. Web uygulamasını başlat
+echo -e "${GREEN}Uygulama başlatılıyor...${NC}"
+docker-compose -f docker-compose.prod.yml up -d web
+
+# 4. Gereksiz image'ları temizle (Pi'de yer kazanmak için)
+echo -e "${GREEN}Temizlik yapılıyor...${NC}"
 docker image prune -f
+
+echo -e "${GREEN}Deploy tamamlandı! 🚀${NC}"

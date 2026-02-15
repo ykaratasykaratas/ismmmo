@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/announcement_service.dart';
 import '../../models/announcement_model.dart';
 import '../../core/theme/colors.dart';
+import '../../core/constants/api_constants.dart';
 import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,12 +29,35 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _openMap(double lat, double lng) async {
+    final googleMapsUrl = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
+    if (await canLaunchUrl(googleMapsUrl)) {
+      await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Harita uygulaması açılamadı')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Duyurular & Etkinlikler'),
         actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.notifications,
+            ), // Placeholder or remove if not needed, user wants notification settings in menu later
+            onPressed: () {
+              // Navigation to notifications or just remove
+            },
+          ),
           IconButton(icon: const Icon(Icons.refresh), onPressed: _refresh),
           IconButton(
             icon: const Icon(Icons.logout),
@@ -42,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      backgroundColor: Colors.grey[100], // Hafif gri arka plan
+      backgroundColor: Colors.grey[100],
       body: FutureBuilder<List<Announcement>>(
         future: _announcementsFuture,
         builder: (context, snapshot) {
@@ -83,12 +108,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: () {
-                    // Detay sayfasına git (şimdilik boş)
+                    // Detay sayfasına git
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Header Strip (Renkli üst çizgi veya Kategori badge)
+                      // Header Strip
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -150,6 +175,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
+                      // Image
+                      if (item.imageUrl != null && item.imageUrl!.isNotEmpty)
+                        SizedBox(
+                          height: 200,
+                          width: double.infinity,
+                          child: Image.network(
+                            '${ApiConstants.baseUrl}${item.imageUrl}',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey[200],
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.broken_image,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+
                       // Content
                       Padding(
                         padding: const EdgeInsets.all(16),
@@ -165,7 +212,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 1.3,
                               ),
                             ),
-                            const SizedBox(height: 8),
+
+                            if (item.locationName != null) ...[
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on,
+                                    size: 16,
+                                    color: Colors.grey,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      item.locationName!,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+
+                            const SizedBox(height: 12),
                             Text(
                               item.description,
                               maxLines: 4,
@@ -180,27 +251,169 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      // Action Bar (Only for events or general 'Read More')
+                      // Action Bar
                       if (isEvent)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: () => _showJoinDialog(context, item),
-                              icon: const Icon(Icons.event_available, size: 18),
-                              label: const Text('Etkinliğe Katıl'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
+                        // Action Bar
+                        if (isEvent)
+                          Builder(
+                            builder: (context) {
+                              final now = DateTime.now();
+                              final isDeadlinePassed =
+                                  item.participationDeadline != null &&
+                                  now.isAfter(item.participationDeadline!);
+
+                              // Basic check for visual feedback - exact quota check is on backend
+                              // We can check if participationCount >= maxParticipants ONLY IF plusCount wasn't used much
+                              // But for now let's rely on backend error for quota full
+
+                              String buttonLabel = 'Katıl';
+                              IconData buttonIcon = Icons.event_available;
+                              bool isButtonDisabled = false;
+
+                              if (isDeadlinePassed) {
+                                buttonLabel = 'Süre Doldu';
+                                buttonIcon = Icons.timer_off;
+                                isButtonDisabled = true;
+                              } else if (item.maxParticipants != null &&
+                                  item.participationCount >=
+                                      item.maxParticipants!) {
+                                // Fallback: if even registrations exceed max, definitely full.
+                                buttonLabel = 'Kontenjan Dolu';
+                                buttonIcon = Icons.group_off;
+                                isButtonDisabled = true;
+                              }
+
+                              return Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  0,
+                                  16,
+                                  16,
                                 ),
-                              ),
-                            ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Info Row (Deadline & Quota)
+                                    if (item.participationDeadline != null ||
+                                        item.maxParticipants != null)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 8.0,
+                                        ),
+                                        child: Wrap(
+                                          spacing: 12,
+                                          children: [
+                                            if (item.participationDeadline !=
+                                                null)
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.hourglass_bottom,
+                                                    size: 14,
+                                                    color: isDeadlinePassed
+                                                        ? Colors.red
+                                                        : Colors.orange,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Son: ${DateFormat('dd MMM HH:mm', 'tr').format(item.participationDeadline!)}',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: isDeadlinePassed
+                                                          ? Colors.red
+                                                          : Colors.grey[700],
+                                                      fontWeight:
+                                                          isDeadlinePassed
+                                                          ? FontWeight.bold
+                                                          : FontWeight.normal,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            if (item.maxParticipants != null)
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.people,
+                                                    size: 14,
+                                                    color: Colors.blue,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Kota: ${item.maxParticipants} Kişi',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.grey[700],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: ElevatedButton.icon(
+                                            onPressed: isButtonDisabled
+                                                ? null
+                                                : () => _showJoinDialog(
+                                                    context,
+                                                    item,
+                                                  ),
+                                            icon: Icon(buttonIcon, size: 18),
+                                            label: Text(buttonLabel),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: isButtonDisabled
+                                                  ? Colors.grey
+                                                  : AppColors.primary,
+                                              foregroundColor: Colors.white,
+                                              elevation: 0,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 12,
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
+                                        if (item.latitude != null &&
+                                            item.longitude != null) ...[
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: OutlinedButton.icon(
+                                              onPressed: () => _openMap(
+                                                item.latitude!,
+                                                item.longitude!,
+                                              ),
+                                              icon: const Icon(
+                                                Icons.map,
+                                                size: 18,
+                                              ),
+                                              label: const Text('Harita'),
+                                              style: OutlinedButton.styleFrom(
+                                                foregroundColor:
+                                                    AppColors.primary,
+                                                side: const BorderSide(
+                                                  color: AppColors.primary,
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 12,
+                                                    ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                        ),
                     ],
                   ),
                 ),
