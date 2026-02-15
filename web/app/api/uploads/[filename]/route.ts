@@ -4,11 +4,9 @@ import path from 'path';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { filename: string } }
+    context: { params: Promise<{ filename: string }> }
 ) {
-    // Await params if using Next.js 15+ convention, although in many versions it's direct.
-    // Let's use it safely.
-    const { filename } = await (params as any);
+    const { filename } = await context.params;
     const filePath = path.join(process.cwd(), 'public/uploads', filename);
 
     console.log(`Serving image: ${filename}`);
