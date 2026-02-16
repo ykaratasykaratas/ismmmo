@@ -3,9 +3,7 @@ version: '3'
 services:
   web:
     container_name: ismmmo-web-prod
-    build:
-      context: ./web
-      dockerfile: Dockerfile
+    image: ykaratas421/ismmmo-web:latest
     restart: always
     ports:
       - "3000:3000"
@@ -18,18 +16,12 @@ services:
     env_file:
       - .env
     volumes:
-      # Veritabanının kalıcı olması için volume mount (PROD DB)
-      # /app/db klasörünü mount ederek SQLite'ın journal dosyasını yazabilmesini sağlıyoruz
       - ./web/db:/app/db
-      # Upload edilen resimlerin kalıcı olması için volume mount
       - ./web/public/uploads:/app/public/uploads
 
   migrator:
     container_name: ismmmo-migrator
-    build:
-      context: ./web
-      dockerfile: Dockerfile
-      target: builder
+    image: ykaratas421/ismmmo-web:latest
     command: sh -c "npx prisma db push --accept-data-loss && npx prisma db seed"
     environment:
       - DATABASE_URL=file:/app/db/prod.db
