@@ -103,6 +103,68 @@ class AuthService {
     }
   }
 
+  Future<void> forgotPassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConstants.baseUrl}/api/auth/forgot-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          jsonDecode(response.body)['error'] ?? 'İşlem başarısız.',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> verifyResetCode(String email, String code) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConstants.baseUrl}/api/auth/verify-reset-code'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'code': code}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          jsonDecode(response.body)['error'] ?? 'Kod doğrulanamadı.',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> resetPassword(
+    String email,
+    String code,
+    String newPassword,
+  ) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConstants.baseUrl}/api/auth/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'code': code,
+          'newPassword': newPassword,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          jsonDecode(response.body)['error'] ?? 'Şifre sıfırlanamadı.',
+        );
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<User> updateProfile(String userId, Map<String, dynamic> data) async {
     try {
       final response = await http.patch(

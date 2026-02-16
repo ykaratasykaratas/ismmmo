@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 import '../../core/theme/colors.dart';
 import '../main_scaffold.dart';
+import 'forgot_password_screen.dart';
 
 // Standalone widget to be used in Tabs
 class LoginScreenContent extends StatefulWidget {
@@ -102,7 +103,13 @@ class _LoginScreenContentState extends State<LoginScreenContent> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordScreen(),
+                      ),
+                    );
+                  },
                   child: const Text(
                     'Şifremi Unuttum?',
                     style: TextStyle(color: AppColors.primary, fontSize: 12),

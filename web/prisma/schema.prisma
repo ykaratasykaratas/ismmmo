@@ -18,6 +18,8 @@ model User {
   status         String          @default("Pending")
   categoryId     String?
   createdAt      DateTime        @default(now())
+  resetToken     String?
+  resetTokenExpiry DateTime?
   participations Participation[]
   category       Category?       @relation(fields: [categoryId], references: [id])
 }
