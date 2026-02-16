@@ -22,7 +22,7 @@ services:
   migrator:
     container_name: ismmmo-migrator
     image: ykaratas421/ismmmo-web:latest
-    command: sh -c "npx prisma db push --accept-data-loss && npx prisma db seed"
+    command: sh -c "npx prisma@5.22.0 db push --accept-data-loss && npx tsx prisma/seed.ts"
     environment:
       - DATABASE_URL=file:/app/db/prod.db
     volumes:
