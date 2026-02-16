@@ -1,6 +1,7 @@
 class ApiConstants {
   // Replace with your machine's local IP
-  static const String baseUrl = 'http://192.168.1.36:3000';
+  // Replace with your machine's local IP
+  static const String baseUrl = 'https://ismmmokartal.ykaratas.online';
 
   static const String login = '$baseUrl/api/auth/login';
   static const String register = '$baseUrl/api/auth/register';
